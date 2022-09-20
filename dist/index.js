@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const body_parser_1 = __importDefault(require("body-parser"));
+const constant_1 = require("./helpers/constant");
+require("dotenv").config();
+const express = require("express");
+const authRoute = require("./routes/auth");
+const visitorRoute = require("./routes/visitor");
+const cors = require("cors");
+const PORT = process.env.PORT || 3000;
+const app = express();
+app.use(cors(constant_1.corsOpts));
+app.use(body_parser_1.default.json());
+app.get("/", (req, res, next) => res.send("Welcome to techiMa-Manager API."));
+app.use("/api/auth", authRoute);
+app.use("/api/visitor", visitorRoute);
+app.listen(PORT, () => console.log("Listen"));

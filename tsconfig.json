@@ -1,0 +1,17 @@
+{
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"],
+    "compilerOptions": {
+      "allowJs": true,
+      "target": "es6", 
+      "module": "commonjs", 
+      "sourceMap": false, 
+      "outDir": "dist", 
+      // "strict": true, 
+      "moduleResolution": "node", 
+      "esModuleInterop": true,
+      "declaration": true,
+      "forceConsistentCasingInFileNames": true,
+      "experimentalDecorators": true
+    }
+}
