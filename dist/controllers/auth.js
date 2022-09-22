@@ -14,7 +14,6 @@ const bcrypt_1 = require("bcrypt");
 const configFirebase = require("../configs/firebase");
 const db = configFirebase.db;
 const visitorsRef = (0, firestore_1.collection)(db, "users");
-const docUser = (0, firestore_1.doc)(db, "users");
 function logIn(req, res, next) {
     return res.status(200).json({ data: "Everything work fine" });
 }
@@ -28,13 +27,14 @@ function signUp(req, res, next) {
             querySnaphot.forEach((doc) => {
                 oldUsers.push(doc.data());
             });
+            // verify if user exist, if yes 400, He just need to login not create an account
             if (oldUsers.length > 0) {
                 return res.status(400).json({
                     msg: "Account already exists",
                     errors: { keys: "user-exist" },
                 });
             }
-            console.log("here");
+            // if user hav'nt not account hash the password using bcrypt
             const encryptedPassword = yield (0, bcrypt_1.hash)(keys.password, 10);
             const userToSave = {
                 firstName: keys.firstName,
@@ -44,8 +44,13 @@ function signUp(req, res, next) {
                 role: keys.role,
                 isActive: false,
             };
-            // const result = await addDoc(visitorsRef, userToSave);
-            // console.log(result, "<<<=== Stock user");
+            //Add User Information on firebase
+            const result = yield (0, firestore_1.addDoc)(visitorsRef, userToSave);
+            yield (0, firestore_1.updateDoc)((0, firestore_1.doc)(db, "users", result.id), {
+                id: result.id,
+            });
+            userToSave["id"] = result.id;
+            //Return a response
             return res
                 .status(201)
                 .json({ msg: "User created", data: { user: userToSave } });

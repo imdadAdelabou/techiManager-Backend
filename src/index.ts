@@ -6,6 +6,7 @@ require("dotenv").config();
 const express = require("express");
 const authRoute = require("./routes/auth");
 const visitorRoute = require("./routes/visitor");
+const codeRoute = require("./routes/code");
 const cors = require("cors");
 
 const PORT = process.env.PORT || 3000;
@@ -19,5 +20,6 @@ app.get("/", (req: Request, res: Response, next: () => void) =>
 );
 app.use("/api/auth", authRoute);
 app.use("/api/visitor", visitorRoute);
+app.use("/api/code", codeRoute);
 
 app.listen(PORT, () => console.log("Listen"));
