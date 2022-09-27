@@ -9,13 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendMiddle = void 0;
 const checkIfUserExist_1 = require("./checkIfUserExist");
-exports.sendMiddle = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const ifUserExist = yield (0, checkIfUserExist_1.checkIfUserExist)(req.body.email);
-    console.log(ifUserExist, "<===== User Exist");
-    if (!ifUserExist)
-        return res
-            .status(404)
-            .json({ msg: "Can't send verification code to inexistant user." });
-    next();
-});
+function sendMiddle(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!req.body.email)
+            return res
+                .status(400)
+                .json({ msg: "Email is required", errors: { keys: ["email"] } });
+        const ifUserExist = yield (0, checkIfUserExist_1.checkIfUserExist)(req.body.email);
+        if (!ifUserExist)
+            return res
+                .status(404)
+                .json({ msg: "Can't send verification code to inexistant user." });
+        next();
+    });
+}
+exports.sendMiddle = sendMiddle;
