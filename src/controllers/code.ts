@@ -51,24 +51,35 @@ exports.verifyCode = async (req: Request, res: Response, next: () => void) => {
   if (!email || !code) {
     return res
       .status(400)
-      .json({ msg: "Bad request", errors: { keys: ["email"] } });
+      .json({ msg: "Bad request", errors: { keys: ["email", "code"] } });
   }
 
   try {
+    // Rechercher l'utilisateur qui dispose de ce mail dans la collection codes
     const queryMatching = query(codeRef, where("email", "==", email));
     const docs = await getDocs(queryMatching);
 
     docs.forEach((doc) => codes.push(doc.data()));
+    //Si aucun code n'est relié a cette adresse email dans la collection codes, retourner une erreur
+
     if (!(codes.length > 0))
       return res.status(404).json({
         msg: "No verification code is linked to this email address or user don't exist",
         keys: ["no-code"],
       });
+
+    //Dans le cas qu'un code est associé à cette adresse mail
+    // mais que le code envoyé par l'utilsateur est différente de celle stocké dans la base de donnée
+    //retourner une erreur
+
     if (!(codes[0].code === code))
       return res.status(400).json({
         msg: "Wrong confirmation code",
         erros: { keys: ["wrong-code"] },
       });
+
+    // Dans le cas contraire, lorsque le code envoyé par l'utilisateur est correcte
+    // Mettre à true la propriété isActive lié au document de l'utilisateur
     const ifUserExist = await checkIfUserExist(email);
     if (typeof ifUserExist === "boolean") {
       throw "User don't exist";
@@ -76,6 +87,7 @@ exports.verifyCode = async (req: Request, res: Response, next: () => void) => {
     await updateDoc(doc(db, "users", ifUserExist), {
       isActive: true,
     });
+
     return res
       .status(200)
       .json({ msg: "Thanks for confirming your email address" });
