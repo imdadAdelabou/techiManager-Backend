@@ -10,10 +10,13 @@ function generateRandomNumber() {
 }
 exports.sendCode = (req, res, next) => {
     try {
-        (0, nodeMailer_1.sendMail)("imdadadelabou0@gmail.com", "Code de confirmation", {
+        const email = req.body.email.split("@")[0];
+        (0, nodeMailer_1.sendMail)(req.body.email, "Code de confirmation", {
             code: generateRandomNumber(),
-            username: req.body.email.split("@")[0],
-        });
+            username: email[0].toUpperCase() + email.slice(1),
+        })
+            .then(() => console.log("Message sent"))
+            .catch((e) => console.log(e));
     }
     catch (e) { }
     return res.status(200).json({ msg: "Code sent" });
