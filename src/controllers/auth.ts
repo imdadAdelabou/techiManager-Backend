@@ -8,14 +8,39 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
+const jwt = require("jsonwebtoken");
 
-import { hash } from "bcrypt";
+import { hash, compare } from "bcrypt";
+import { checkIfUserExist } from "../middlewares/checkIfUserExist";
 const configFirebase = require("../configs/firebase");
 const db = configFirebase.db;
 const visitorsRef = collection(db, "users");
 
-function logIn(req: Request, res: Response, next: () => void) {
-  return res.status(200).json({ data: "Everything work fine" });
+async function logIn(req: Request, res: Response, next: () => void) {
+  const { email, password } = req.body;
+  const user = await checkIfUserExist(email);
+
+  if (typeof user === "boolean")
+    return res
+      .status(404)
+      .json({ msg: "No user with this e-mail address exists" });
+
+  const isSame: boolean = await compare(password, user.password);
+  if (!isSame)
+    return res
+      .status(401)
+      .json({ msg: "Wrong password", erros: { keys: ["wrong-password"] } });
+  if (!user.isActive)
+    return res.status(401).json({
+      msg: "You must verify your account before logging in with account",
+    });
+
+  const token = jwt.sign(
+    { userId: user.id, email: user.email },
+    process.env.TOKEN_KEY,
+    { expiresIn: "2h" }
+  );
+  return res.status(200).json({ data: "User is logged", token: token });
 }
 
 async function signUp(req: Request, res: Response, next: () => void) {

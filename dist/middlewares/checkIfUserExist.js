@@ -13,6 +13,7 @@ exports.checkIfUserExist = void 0;
 const firestore_1 = require("firebase/firestore");
 const db = require("../configs/firebase").db;
 const usersRef = (0, firestore_1.collection)(db, "users");
+// Promise<boolean>
 function checkIfUserExist(email) {
     return __awaiter(this, void 0, void 0, function* () {
         const querySearch = (0, firestore_1.query)(usersRef, (0, firestore_1.where)("email", "==", email));
@@ -22,7 +23,7 @@ function checkIfUserExist(email) {
             querySnaphot.forEach((doc) => {
                 users.push(doc.data());
             });
-            return users.length > 0 ? true : false;
+            return users.length > 0 ? users[0] : false;
         }
         catch (e) {
             return false;

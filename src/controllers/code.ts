@@ -84,7 +84,7 @@ exports.verifyCode = async (req: Request, res: Response, next: () => void) => {
     if (typeof ifUserExist === "boolean") {
       throw "User don't exist";
     }
-    await updateDoc(doc(db, "users", ifUserExist), {
+    await updateDoc(doc(db, "users", ifUserExist.id), {
       isActive: true,
     });
 
