@@ -13,6 +13,7 @@ exports.checkLoginParams = (req: Request, res: Response, next: () => void) => {
     if (errors.length > 0) {
       return res.status(400).json({ msg: "Bad request", errors: errors });
     }
+
     next();
   });
 };
