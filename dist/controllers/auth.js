@@ -40,20 +40,7 @@ function logIn(req, res, next) {
 function signUp(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const keys = req.body;
-        const querySignUp = (0, firestore_1.query)(visitorsRef, (0, firestore_1.where)("email", "==", keys.email));
-        const oldUsers = [];
         try {
-            const querySnaphot = yield (0, firestore_1.getDocs)(querySignUp);
-            querySnaphot.forEach((doc) => {
-                oldUsers.push(doc.data());
-            });
-            // verify if user exist, if yes 400, He just need to login not create an account
-            if (oldUsers.length > 0) {
-                return res.status(400).json({
-                    msg: "Account already exists",
-                    errors: { keys: "user-exist" },
-                });
-            }
             // if user hav'nt not account hash the password using bcrypt
             const encryptedPassword = yield (0, bcrypt_1.hash)(keys.password, 10);
             const userToSave = {

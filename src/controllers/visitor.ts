@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 
 const db = require("../configs/firebase").db;
 
@@ -9,9 +15,12 @@ async function addVisitor(req: Request, res: Response, next: () => void) {
   try {
     const keys = req.body;
     const docRef = await addDoc(collection(db, "visitors"), keys);
+    const visitorRef = doc(db, "visitors", docRef.id);
+    await updateDoc(visitorRef, { id: docRef.id });
 
     return res.status(201).json({ msg: "Visitor created" });
   } catch (e) {
+    console.log(e);
     return res.status(500).json({ msg: "Internal server error", errors: e });
   }
 }

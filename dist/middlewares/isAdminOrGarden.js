@@ -9,16 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.me = void 0;
-const checkIfUserExist_1 = require("../middlewares/checkIfUserExist");
-const me = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body.user);
-    const userReq = req.body.user;
-    const user = yield (0, checkIfUserExist_1.checkIfUserExist)(userReq.email);
-    if (typeof user === "boolean") {
+exports.isAdminOrGarden = exports.matching = void 0;
+const types_1 = require("../helpers/types");
+const checkIfUserExist_1 = require("./checkIfUserExist");
+exports.matching = {
+    garden: types_1.RoleType.garden,
+    admin: types_1.RoleType.admin,
+    user: types_1.RoleType.user,
+};
+const isAdminOrGarden = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield (0, checkIfUserExist_1.checkIfUserExist)(req.body.user.email);
+    if (typeof user === "boolean")
         return res.status(404).json({ msg: "Inexistant user" });
-    }
-    delete user.password;
-    return res.status(200).json({ msg: "Data ", data: { user: user } });
+    if (exports.matching[user.role] === types_1.RoleType.user)
+        return res.status(401).json({
+            msg: "You don't have sufficent acces on this path",
+            errors: { keys: ["is-not-garden-or-admin"] },
+        });
+    next();
 });
-exports.me = me;
+exports.isAdminOrGarden = isAdminOrGarden;

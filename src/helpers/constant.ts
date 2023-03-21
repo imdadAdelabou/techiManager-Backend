@@ -3,5 +3,5 @@ export const corsOpts = {
 
   methods: ["GET", "POST"],
 
-  allowedHeaders: ["Content-Type"],
+  allowedHeaders: ["Content-Type", "X-Requested-With"],
 };

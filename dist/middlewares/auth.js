@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.auth = void 0;
 const jwt = require("jsonwebtoken");
 const auth = (req, res, next) => {
-    const token = req.headers["x-access-token"];
+    const token = req.query.token;
     //We verify if user send request with valid token
     if (!token) {
         return res

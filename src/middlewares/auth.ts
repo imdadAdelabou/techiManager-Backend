@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 const jwt = require("jsonwebtoken");
 
 export const auth = (req: Request, res: Response, next: () => void) => {
-  const token = req.headers["x-access-token"];
+  const token = req.query.token;
 
   //We verify if user send request with valid token
   if (!token) {

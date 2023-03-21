@@ -1,13 +1,5 @@
 import { Request, Response } from "express";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  addDoc,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
 const jwt = require("jsonwebtoken");
 
 import { hash, compare } from "bcrypt";
@@ -45,23 +37,8 @@ async function logIn(req: Request, res: Response, next: () => void) {
 
 async function signUp(req: Request, res: Response, next: () => void) {
   const keys = req.body;
-  const querySignUp = query(visitorsRef, where("email", "==", keys.email));
-  const oldUsers = [];
 
   try {
-    const querySnaphot = await getDocs(querySignUp);
-    querySnaphot.forEach((doc) => {
-      oldUsers.push(doc.data());
-    });
-
-    // verify if user exist, if yes 400, He just need to login not create an account
-    if (oldUsers.length > 0) {
-      return res.status(400).json({
-        msg: "Account already exists",
-        errors: { keys: "user-exist" },
-      });
-    }
-
     // if user hav'nt not account hash the password using bcrypt
     const encryptedPassword = await hash(keys.password, 10);
     const userToSave = {

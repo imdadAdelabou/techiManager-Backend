@@ -4,5 +4,5 @@ exports.corsOpts = void 0;
 exports.corsOpts = {
     origin: "*",
     methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: ["Content-Type", "X-Requested-With"],
 };
