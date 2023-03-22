@@ -3,7 +3,6 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { User } from "../helpers/types";
 
 const db = require("../configs/firebase").db;
-const usersRef = collection(db, "users");
 
 interface CheckUser {
   exist: boolean;
@@ -11,7 +10,11 @@ interface CheckUser {
 }
 
 // Promise<boolean>
-export async function checkIfUserExist(email: string): Promise<boolean | User> {
+export async function checkIfUserExist(
+  email: string,
+  collectionName?: string
+): Promise<boolean | User> {
+  const usersRef = collection(db, collectionName || "users");
   const querySearch = query(usersRef, where("email", "==", email));
   const users = [];
 
