@@ -17,6 +17,9 @@ async function logIn(req: Request, res: Response, next: () => void) {
       .status(404)
       .json({ msg: "No user with this e-mail address exists" });
 
+  console.log(user.password);
+  console.log(password);
+
   const isSame: boolean = await compare(password, user.password);
   if (!isSame)
     return res
